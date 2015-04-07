@@ -3,3 +3,4 @@ $a -match "@{OutlookSecureTempFolder=(?<content>.*)}"
 $b = $matches['content']
 $b = $b + "\*"
 remove-item $b -Recurse -force
+#test
