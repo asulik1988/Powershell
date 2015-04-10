@@ -13,13 +13,14 @@ set CATALINA_BASE=C:\Apps\Tomcat\$instanceName
 cd $env:CATALINA_HOME\bin
 $TITLE="Tomcat + $instanceName + Instance"
 if ($arg1 -eq "startup") { 
-cmd.exe startup.bat $TITLE
+cmd.exe /c startup.bat $TITLE
 $outputBox.text = $catalinalog
 
 
 }
 if ($arg1 -eq "shutdown") { 
 cmd.exe /c shutdown.bat $TITLE
+$outputBox.text = $catalinalog
 }
 
 
