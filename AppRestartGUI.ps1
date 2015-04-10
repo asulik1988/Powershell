@@ -4,14 +4,25 @@
 $Form = New-Object System.Windows.Forms.Form    
 $Form.Size = New-Object System.Drawing.Size(600,400)  
 
-############################################## Start functions
+############################################## Start function
 
 function tomcatStartStop($arg1) {
 $instanceName=$DropDownBox.SelectedItem.ToString()
+$catalinalog = Get-Content -Path "C:\apps\Tomcat\$instanceName\logs\catalina*"
 set CATALINA_BASE=C:\Apps\Tomcat\$instanceName
-cd "%CATALINA_HOME%\bin"
-set TITLE="Tomcat $instanceName Instance"
-call $arg1.bat %TITLE%
+cd $env:CATALINA_HOME\bin
+$TITLE="Tomcat + $instanceName + Instance"
+if ($arg1 -eq "startup") { 
+cmd.exe startup.bat $TITLE
+$outputBox.text = $catalinalog
+
+
+}
+if ($arg1 -eq "shutdown") { 
+cmd.exe /c shutdown.bat $TITLE
+}
+
+
                      } #end tomcatStartStop
 
 ############################################## end functions
@@ -24,7 +35,7 @@ $DropDownBox.Size = New-Object System.Drawing.Size(180,20)
 $DropDownBox.DropDownHeight = 200 
 $Form.Controls.Add($DropDownBox) 
 
-$wksList=@("Team 1", "Team 2", "Team 3", "Team 4")
+$wksList=@("Team1", "Team2", "Team3", "Team4")
 
 foreach ($wks in $wksList) {
                       $DropDownBox.Items.Add($wks)
@@ -49,14 +60,14 @@ $Button = New-Object System.Windows.Forms.Button
 $Button.Location = New-Object System.Drawing.Size(250,30) 
 $Button.Size = New-Object System.Drawing.Size(110,80) 
 $Button.Text = "Start" 
-$Button.Add_Click({procInfo}) 
+$Button.Add_Click({tomcatStartStop("startup")}) 
 $Form.Controls.Add($Button) 
 
 $Button2 = New-Object System.Windows.Forms.Button 
 $Button2.Location = New-Object System.Drawing.Size(350,30) 
 $Button2.Size = New-Object System.Drawing.Size(110,80) 
 $Button2.Text = "Stop" 
-$Button2.Add_Click({test}) 
+$Button2.Add_Click({tomcatStartStop("shutdown")}) 
 $Form.Controls.Add($Button2) 
 
 ############################################## end buttons
