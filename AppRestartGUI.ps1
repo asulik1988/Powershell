@@ -8,22 +8,11 @@ $Form.Size = New-Object System.Drawing.Size(600,400)
 
 function tomcatStartStop($arg1) {
 $instanceName=$DropDownBox.SelectedItem.ToString()
-$catalinalog = Get-Content -Path "C:\apps\Tomcat\$instanceName\logs\catalina*"
-set CATALINA_BASE=C:\Apps\Tomcat\$instanceName
+$env:CATALINA_BASE=C:\Apps\Tomcat\$instanceName
 cd $env:CATALINA_HOME\bin
-$TITLE="Tomcat + $instanceName + Instance"
-if ($arg1 -eq "startup") { 
-cmd.exe /c startup.bat $TITLE
-$outputBox.text = $catalinalog
-
-
-}
-if ($arg1 -eq "shutdown") { 
-cmd.exe /c shutdown.bat $TITLE
-$outputBox.text = $catalinalog
-}
-
-
+$env:TITLE="Tomcat $instanceName Instance"
+$startup = ".\startup.bat"
+Start-Process $startup $env:TITLE
                      } #end tomcatStartStop
 
 ############################################## end functions
@@ -36,7 +25,7 @@ $DropDownBox.Size = New-Object System.Drawing.Size(180,20)
 $DropDownBox.DropDownHeight = 200 
 $Form.Controls.Add($DropDownBox) 
 
-$wksList=@("Team1", "Team2", "Team3", "Team4")
+$wksList=@("Team 1", "Team 2", "Team 3", "Team 4")
 
 foreach ($wks in $wksList) {
                       $DropDownBox.Items.Add($wks)
