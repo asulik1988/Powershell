@@ -1,0 +1,1 @@
+﻿foreach ($user in Get-ADUser -SearchBase "OU=Disabled Users,DC=contoso,DC=inc" -Filter {enabled -eq $false} -Properties Company|where {$_.Company -eq "contoso" -or $_.Company -eq "contoso_USA"}){Get-ADPrincipalGroupMembership -Identity $user | ForEach-Object {Remove-ADPrincipalGroupMembership -Identity $user -MemberOf $_ -Confirm:$False}}
