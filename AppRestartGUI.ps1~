@@ -44,7 +44,7 @@ $Form.Controls.Add($outputBox)
 
 ############################################## end text fields
 
-############################################## Start button / Stop button forms
+############################################## Start button / Stop button
 
 $Button = New-Object System.Windows.Forms.Button 
 $Button.Location = New-Object System.Drawing.Size(250,30) 

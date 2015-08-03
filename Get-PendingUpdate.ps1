@@ -5,7 +5,7 @@ $cert = read-host "Please enter Cert / Test box to verifiy updates against Prod"
 
  If (Test-Connection -ComputerName $cert -Count 1 -Quiet) {
  $report = @()
- If (-Not (Test-Path -Path "C:\prod.txt")) {New-Item -ItemType file -Path C:\prod.txt} 
+ If (-Not (Test-Path -Path "C:\users\adam.sulik\desktop\prod.txt")) {New-Item -ItemType file -Path C:\users\adam.sulik\desktop\prod.txt} 
             Try { 
             #Create Session COM object 
                 Write-Output $cert " Creating COM object for WSUS Session" 
@@ -70,11 +70,11 @@ $cert = read-host "Please enter Cert / Test box to verifiy updates against Prod"
             }   
 
     Write-Output $report
-    Write-Output $report | Out-File C:\cert.txt
+    Write-Output $report | Out-File C:\users\adam.sulik\desktop\cert.txt
 
 If (Test-Connection -ComputerName $c -Count 1 -Quiet) {
 $report = @() 
-If (-Not (Test-Path -Path "C:\prod.txt")) {New-Item -ItemType file -Path C:\prod.txt}
+If (-Not (Test-Path -Path "C:\prod.txt")) {New-Item -ItemType file -Path C:\users\adam.sulik\desktop\prod.txt}
             Try { 
             #Create Session COM object 
               #  Write-Verbose "Creating COM object for WSUS Session" 
@@ -114,7 +114,7 @@ If (-Not (Test-Path -Path "C:\prod.txt")) {New-Item -ItemType file -Path C:\prod
                     If ($update.IsDownLoaded -eq "True") {
                         
                         $kbRow = $null
-                        $KbRow = Get-Content C:\cert.txt | Where-Object {$_ -like "*$KB*"}  
+                        $KbRow = Get-Content C:\users\adam.sulik\desktop\cert.txt | Where-Object {$_ -like "*$KB*"}  
                         $temp = "" | Select Computer, Title, KB,IsDownloaded, Approved
                         if ($kbRow -eq $null){$temp.approved = "FALSE"} else {$temp.approved = "TRUE"}
                         $temp.Computer = $c 
@@ -162,7 +162,7 @@ If (-Not (Test-Path -Path "C:\prod.txt")) {New-Item -ItemType file -Path C:\prod
    
 
     Write-Output $report
-    Write-Output $report | Out-File C:\prod.txt
+    Write-Output $report | Out-File C:\users\adam.sulik\desktop\prod.txt
 
 
 
