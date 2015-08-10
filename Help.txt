@@ -1,0 +1,35 @@
+NAME
+    Repair-Crystal
+
+SYNOPSIS
+    Helps SysOps resolve issues with the Crystal Report Application Server.
+
+
+SYNTAX
+    Repair-Crystal [[-Start] <String[]>] [-Stop] <String[]>] [-Query] <String[]>] [-Kill] [-<String[]>] [-Log] [-<String[]>]
+
+
+DESCRIPTION
+    The Repair-Crystal script will help you when running into issues with the Crystal Report Application Server (Herein referred to as "Crystal RAS"). Here you can Stop and
+    Start the Crystal RAS instance in the event.
+
+
+RELATED LINKS
+    SysOPS Manual location : http://sharepoint/sites/IT/SLM/IT%20Document%20Library/Forms/AllItems.aspx
+    Crystal Server Documentation : \\Egypt\software\IT Admin\Crystal Server 2013\Documentation
+   
+
+Examples
+   Repair-Crystal -Action Stop
+	This action will Stop the Crystal RAS service.
+   Repair-Crystal -Action Start
+	This action will Start the Crystal RAS service.
+   Repair-Crystal -Action Query
+	This action will report back the status of the Crystal RAS Service.
+   Repair-Crystal -Action Kill
+	Should you run a stop and keep querying and keep getting 'shutdown pending' This action will forcibly kill the process for Crystal RAS.
+   Repair-Crystal -Action Log
+	This action will report back the Crystal RAS error log, to give you information into the situation at hand.
+
+
+

@@ -1,5 +1,5 @@
-﻿$user1 = Read-Host "Please enter username of First person to compare"
-$user2 = Read-Host "Please enter username of Second person to compare"
+﻿param($user1, $user2)
+
 $user1Groups = @()
 $user2Groups = @()
 $user1Diff = @()
