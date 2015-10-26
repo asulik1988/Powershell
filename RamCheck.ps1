@@ -39,4 +39,4 @@ if ($percentUtilized -gt $critical){
 }
 
 Write-Host $msg
-#$host.SetShouldExit($err)
+$host.SetShouldExit($err)
