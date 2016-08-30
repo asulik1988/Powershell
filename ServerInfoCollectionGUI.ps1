@@ -13,12 +13,16 @@ function GenerateForm {
 
 ### Check to see if Physical or Virtual and only load the forms needed for either
 $isThisVirtual = (gwmi -q "select * from win32_computersystem").Manufacturer -match "vmware"
-
-if ($isThisVirtual){
-    $PhysicalPanel = New-Object System.Windows.Forms.Panel
-} else {
+if (($isThisVirtual)){
     $VMPanel = New-Object System.Windows.Forms.Panel
+    if (!(test-path HKLM:\SOFTWARE\CSC-SICK)){
+        New-Item HKLM:\SOFTWARE\CSC-Sick -ItemType Directory
+    }
+} else {
+    $PhysicalPanel= New-Object System.Windows.Forms.Panel
 }
+
+
 
 #region Generated Form Objects
 $form1 = New-Object System.Windows.Forms.Form
@@ -57,7 +61,7 @@ $ServerFunctionComboBox = New-Object System.Windows.Forms.ComboBox
 $ServerFunctionLabel = New-Object System.Windows.Forms.Label
 $PrimaryFunctionTextBox = New-Object System.Windows.Forms.TextBox
 $PrimaryFunctionLabel = New-Object System.Windows.Forms.Label
-$AssetTagTextBoxVirtual = New-Object System.Windows.Forms.TextBox
+$script:AssetTagTextBoxVirtual = New-Object System.Windows.Forms.TextBox
 $AssetTagLabelVirtual = New-Object System.Windows.Forms.Label
 $VmwareToolsTextBox = New-Object System.Windows.Forms.TextBox
 $VmwareToolsLabel = New-Object System.Windows.Forms.Label
@@ -91,7 +95,6 @@ $InitialFormWindowState = New-Object System.Windows.Forms.FormWindowState
 #Provide Custom Code for events specified in PrimalForms.
 $CancelButton_OnClick= 
 {
-#TODO: Place custom script here
 
 }
 
@@ -104,7 +107,6 @@ $handler_BuildAdminLabel_Click=
 $handler_SEPTextBox_TextChanged= 
 {
 #TODO: Place custom script here
-
 }
 
 $handler_ADOULabel_Click= 
@@ -148,6 +150,15 @@ $handler_TabPage:_Click=
 #TODO: Place custom script here
 
 }
+$handler_ClusterTextBox_TextChanged={
+    if ($ClusterTextBox.Text.Length -gt 0){
+    $AssetTagTextBoxVirtual.Text = $ClusterTextBox.Text+"\"+$env:computername
+    } else {
+    $AssetTagTextBoxVirtual.Text = ""
+    }
+
+}
+
 
 $OnLoadForm_StateCorrection=
 {#Correct the initial state of the form to prevent the .Net maximized form issue
@@ -573,6 +584,7 @@ $BuildAdminLabel.add_Click($handler_BuildAdminLabel_Click)
 
 $ValidationTab.Controls.Add($BuildAdminLabel)
 
+$WUInstallTextBox.Font = New-Object System.Drawing.Font("Calibri",12,1,3,0)
 $WUInstallTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,227,227,227)
 $WUInstallTextBox.DataBindings.DefaultDataSourceUpdateMode = 0
 $System_Drawing_Point = New-Object System.Drawing.Point
@@ -583,9 +595,19 @@ $WUInstallTextBox.Name = "WUInstallTextBox"
 $WUInstallTextBox.ReadOnly = $True
 $System_Drawing_Size = New-Object System.Drawing.Size
 $System_Drawing_Size.Height = 24
-$System_Drawing_Size.Width = 100
+$System_Drawing_Size.Width = 220
 $WUInstallTextBox.Size = $System_Drawing_Size
 $WUInstallTextBox.TabIndex = 13
+#Find WU Install Tool
+if (test-path C:\bin\WUInstall.exe) {
+    $WUInstallTextBox.text = "C:\bin\WUInstall.exe"
+    $WUInstallTextBox.ForeColor = [System.Drawing.Color]::FromArgb(255,255,255,255)
+    $WUInstallTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,51,189,61)
+} else {
+    $WUInstallTextBox.text = "WUInstall not found in C:\Bin"
+    $WUInstallTextBox.ForeColor = [System.Drawing.Color]::FromArgb(255,255,0,0)
+    $WUInstallTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,0,0,0)
+}
 
 $ValidationTab.Controls.Add($WUInstallTextBox)
 
@@ -935,21 +957,22 @@ $VMPanel.Size = $System_Drawing_Size
 $VMPanel.TabIndex = 15
 
 $ServerInfoInputTab.Controls.Add($VMPanel)
-$AssetTagTextBoxVirtual.BackColor = [System.Drawing.Color]::FromArgb(255,227,227,227)
-$AssetTagTextBoxVirtual.DataBindings.DefaultDataSourceUpdateMode = 0
+
+$script:AssetTagTextBoxVirtual.BackColor = [System.Drawing.Color]::FromArgb(255,227,227,227)
+$script:AssetTagTextBoxVirtual.DataBindings.DefaultDataSourceUpdateMode = 0
 $System_Drawing_Point = New-Object System.Drawing.Point
 $System_Drawing_Point.X = 4
 $System_Drawing_Point.Y = 189
-$AssetTagTextBoxVirtual.Location = $System_Drawing_Point
-$AssetTagTextBoxVirtual.Name = "AssetTagTextBoxVirtual"
-$AssetTagTextBoxVirtual.ReadOnly = $True
+$script:AssetTagTextBoxVirtual.Location = $System_Drawing_Point
+$script:AssetTagTextBoxVirtual.Name = "AssetTagTextBoxVirtual"
+$script:AssetTagTextBoxVirtual.ReadOnly = $True
 $System_Drawing_Size = New-Object System.Drawing.Size
 $System_Drawing_Size.Height = 24
-$System_Drawing_Size.Width = 100
-$AssetTagTextBoxVirtual.Size = $System_Drawing_Size
-$AssetTagTextBoxVirtual.TabIndex = 7
+$System_Drawing_Size.Width = 200
+$script:AssetTagTextBoxVirtual.Size = $System_Drawing_Size
+$script:AssetTagTextBoxVirtual.TabIndex = 7
 
-$VMPanel.Controls.Add($AssetTagTextBoxVirtual)
+$VMPanel.Controls.Add($script:AssetTagTextBoxVirtual)
 
 $AssetTagLabelVirtual.DataBindings.DefaultDataSourceUpdateMode = 0
 $AssetTagLabelVirtual.Font = New-Object System.Drawing.Font("Calibri",12,1,3,1)
@@ -968,7 +991,7 @@ $AssetTagLabelVirtual.TabIndex = 6
 $AssetTagLabelVirtual.Text = "Asset Tag"
 
 $VMPanel.Controls.Add($AssetTagLabelVirtual)
-
+$VmwareToolsTextBox.Font = New-Object System.Drawing.Font("Calibri",12,1,3,0)
 $VmwareToolsTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,227,227,227)
 $VmwareToolsTextBox.DataBindings.DefaultDataSourceUpdateMode = 0
 $System_Drawing_Point = New-Object System.Drawing.Point
@@ -979,10 +1002,26 @@ $VmwareToolsTextBox.Name = "VmwareToolsTextBox"
 $VmwareToolsTextBox.ReadOnly = $True
 $System_Drawing_Size = New-Object System.Drawing.Size
 $System_Drawing_Size.Height = 24
-$System_Drawing_Size.Width = 100
+$System_Drawing_Size.Width = 220
 $VmwareToolsTextBox.Size = $System_Drawing_Size
 $VmwareToolsTextBox.TabIndex = 5
 
+foreach ($service in (gwmi -q "select * from Win32_service")){if ($service.pathname -match "vmtoolsd.exe"){$VMToolPath = $service.pathname}}
+if ($VMToolPath -ne $null){
+    $VMVersion = [system.diagnostics.fileversioninfo]::GetVersionInfo($VMToolPath.Substring(1,($VMToolPath.length -2))).productversion
+    $VmwareToolsTextBox.Text = $VMVersion
+    if ($VMVersion -eq "10.0.0 build-3000743"){
+        $VmwareToolsTextBox.ForeColor = [System.Drawing.Color]::FromArgb(255,255,255,255)
+        $VmwareToolsTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,51,189,61)
+    } else {
+        $VmwareToolsTextBox.ForeColor = [System.Drawing.Color]::FromArgb(255,0,0,0)
+        $VmwareToolsTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,246,255,101)
+    }
+} else {
+    $VmwareToolsTextBox.Text = "VMwareTools NOT DETECTED"
+    $VmwareToolsTextBox.ForeColor = [System.Drawing.Color]::White
+    $VmwareToolsTextBox.BackColor = [System.Drawing.Color]::Red
+}
 $VMPanel.Controls.Add($VmwareToolsTextBox)
 
 $VmwareToolsLabel.DataBindings.DefaultDataSourceUpdateMode = 0
@@ -1014,7 +1053,7 @@ $System_Drawing_Size.Height = 24
 $System_Drawing_Size.Width = 100
 $ClusterTextBox.Size = $System_Drawing_Size
 $ClusterTextBox.TabIndex = 3
-
+$ClusterTextBox.add_TextChanged($handler_ClusterTextBox_TextChanged)
 $VMPanel.Controls.Add($ClusterTextBox)
 
 $ClusterLabel.DataBindings.DefaultDataSourceUpdateMode = 0
@@ -1046,6 +1085,9 @@ $System_Drawing_Size.Height = 24
 $System_Drawing_Size.Width = 100
 $DataCenterTextBox.Size = $System_Drawing_Size
 $DataCenterTextBox.TabIndex = 1
+
+
+
 
 $VMPanel.Controls.Add($DataCenterTextBox)
 
