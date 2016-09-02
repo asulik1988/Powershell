@@ -22,6 +22,8 @@ if (($isThisVirtual)){
     $PhysicalPanel= New-Object System.Windows.Forms.Panel
 }
 
+$RegRoot = "HKLM:\Software\CSC-Sick\"
+
 
 
 #region Generated Form Objects
@@ -123,7 +125,28 @@ $handler_label6_Click=
 
 $SubmitButton_OnClick= 
 {
-#TODO: Place custom script here
+    if ((Get-ItemProperty -Path $RegRoot | select -ExpandProperty BuildAdmin).length -le 0) {Set-ItemProperty -Path $RegRoot -Name BuildAdmin -Value $BuildAdminTextBox.Text}
+
+    if ($isThisVirtual){Set-ItemProperty -Path $RegRoot -Name AssetTag -Value $script:AssetTagTextBoxVirtual.Text} else {}
+    Set-ItemProperty -Path $RegRoot -Name City -Value $CityTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name Cluster -Value $ClusterTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name CostCenter -Value $CostCenterTextBox.text
+    Set-ItemProperty -Path $RegRoot -Name DataCenter -Value $DataCenterTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name Floor -Value $FloorTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name LanDeskVersion -Value $LanDeskTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name PrimaryFunction -Value $PrimaryFunctionTextBox.Text -Type MultiString
+    Set-ItemProperty -Path $RegRoot -Name Rack -Value $RackTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name RSAVersion -Value $RSATextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name SanAttached -Value $SanAttachedComboBox.Text
+    Set-ItemProperty -Path $RegRoot -Name SEPVersion -Value $SEPTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name ServerActivation -Value $ServerActivationTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name ServerFunction -Value $ServerFunctionComboBox.Text
+    Set-ItemProperty -Path $RegRoot -Name Shelf -Value $ShelfTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name SIEM/ALEVersion -Value $SIEMALETextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name State -Value $StateComboBox.Text
+    Set-ItemProperty -Path $RegRoot -Name StreetAddress -Value $StreetTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name VMWareToolsVersion -Value $VmwareToolsTextBox.Text
+    Set-ItemProperty -Path $RegRoot -Name WUInstall -Value $WUInstallTextBox.Text
 
 }
 
@@ -562,6 +585,10 @@ $System_Drawing_Size.Height = 24
 $System_Drawing_Size.Width = 129
 $BuildAdminTextBox.Size = $System_Drawing_Size
 $BuildAdminTextBox.TabIndex = 17
+#$BuildAdminTextBox.Text = (Get-ItemProperty -path HKLM:\Software\CSC-Sick -Name BuildAdmin).BuildAdmin
+if ($BuildAdminTextBox.Text.Length -eq 0){
+    $BuildAdminTextBox.Text = $CurrentUserTextBox.Text
+}
 
 $ValidationTab.Controls.Add($BuildAdminTextBox)
 
@@ -1441,7 +1468,58 @@ $dataGridView1.TabIndex = 0
 
 $ServerHistoryTab.Controls.Add($dataGridView1)
 
+###                                ###
+# Ingest Server History and settings #
+###                                ###
 
+if (Test-Path HKLM:\SOFTWARE\CSC-Sick\History){ 
+$PrimaryFunctionTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty PrimaryFunction
+$ServerFunctionComboBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty ServerFunction
+$CostCenterTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty CostCenter
+$SanAttachedComboBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty SanAttached
+$BuilddatetimeTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty BuildDate
+$BuildAdminTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty BuildAdmin
+$script:AssetTagTextBoxVirtual.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty AssetTag
+$AssetTagTextBoxPhysical.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty AssetTag
+    
+    if ($isThisVirtual){
+       $DataCenterTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty DataCenter
+       $ClusterTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty Cluster
+       $script:AssetTagTextBoxVirtual.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty AssetTag
+    } else {
+        $StreetTextBox.Text =  Get-ItemProperty -Path $RegRoot | select -ExpandProperty StreetAddress
+        $CityTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty City
+        $StateComboBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty State
+        $FloorTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty Floorr
+        $RackTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty Rack
+        $ShelfTextBox.Text = Get-ItemProperty -Path $RegRoot | select -ExpandProperty Shelf
+        $AssetTagTextBoxPhysical = Get-ItemProperty -Path $RegRoot | select -ExpandProperty AssetTag
+    }
+} else {
+    New-Item ($RegRoot + "History") -ItemType Directory -force
+    Set-ItemProperty -Path $RegRoot -Name AssetTag -Value ""
+    Set-ItemProperty -Path $RegRoot -Name BuildAdmin -Value ""
+    Set-ItemProperty -Path $RegRoot -Name BuildDate -Value ""
+    Set-ItemProperty -Path $RegRoot -Name City -Value ""
+    Set-ItemProperty -Path $RegRoot -Name Cluster -Value ""
+    Set-ItemProperty -Path $RegRoot -Name CostCenter -Value ""
+    Set-ItemProperty -Path $RegRoot -Name DataCenter -Value ""
+    Set-ItemProperty -Path $RegRoot -Name Floor -Value ""
+    Set-ItemProperty -Path $RegRoot -Name LanDeskVersion -Value ""
+    Set-ItemProperty -Path $RegRoot -Name PrimaryFunction -Value "" -Type MultiString
+    Set-ItemProperty -Path $RegRoot -Name Rack -Value ""
+    Set-ItemProperty -Path $RegRoot -Name RSAVersion -Value ""
+    Set-ItemProperty -Path $RegRoot -Name SanAttached -Value ""
+    Set-ItemProperty -Path $RegRoot -Name SEPVersion -Value ""
+    Set-ItemProperty -Path $RegRoot -Name ServerActivation -Value ""
+    Set-ItemProperty -Path $RegRoot -Name ServerFunction -Value ""
+    Set-ItemProperty -Path $RegRoot -Name Shelf -Value ""
+    Set-ItemProperty -Path $RegRoot -Name SIEM/ALEVersion -Value ""
+    Set-ItemProperty -Path $RegRoot -Name State -Value ""
+    Set-ItemProperty -Path $RegRoot -Name StreetAddress -Value ""
+    Set-ItemProperty -Path $RegRoot -Name VMWareToolsVersion -Value ""
+    Set-ItemProperty -Path $RegRoot -Name WUInstall -Value ""
+}
 
 #endregion Generated Form Code
 
