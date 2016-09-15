@@ -28,6 +28,8 @@ $RegRoot = "HKLM:\Software\CSC-Sick\"
 
 #region Generated Form Objects
 $form1 = New-Object System.Windows.Forms.Form
+$WarrentyExpirationTextBox = New-Object System.Windows.Forms.TextBox
+$WarrentyExpirationLabel = New-Object System.Windows.Forms.Label
 $CurrentUserTextBox = New-Object System.Windows.Forms.TextBox
 $CurrentUserLabel = New-Object System.Windows.Forms.Label
 $TechBadgeTextBox = New-Object System.Windows.Forms.TextBox
@@ -125,30 +127,53 @@ $handler_label6_Click=
 
 $SubmitButton_OnClick= 
 {
-    if ((Get-ItemProperty -Path $RegRoot | select -ExpandProperty BuildAdmin).length -le 0) {Set-ItemProperty -Path $RegRoot -Name BuildAdmin -Value $BuildAdminTextBox.Text}
+    if ($WarrentyExpirationTextBox.Text.Length -gt 0){
+        if ($WarrentyExpirationTextBox.Text -notmatch '^((((0[13578])|(1[02]))[\/]?(([0-2][0-9])|(3[01])))|(((0[469])|(11))[\/]?(([0-2][0-9])|(30)))|(02[\/]?[0-2][0-9]))[\/]?\d{4}$') {
+            $wshell = New-Object -ComObject Wscript.Shell
+            $wshell.Popup("Warrenty Date must be formated as such: `n01/05/2015`nMM/DD/YYYY",0,"Warrenty Date ERROR",0x0 + 16)
+            $wrongDate = $true
+        }
+    }
 
-    if ($isThisVirtual){Set-ItemProperty -Path $RegRoot -Name AssetTag -Value $script:AssetTagTextBoxVirtual.Text} else {}
-    Set-ItemProperty -Path $RegRoot -Name City -Value $CityTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name Cluster -Value $ClusterTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name CostCenter -Value $CostCenterTextBox.text
-    Set-ItemProperty -Path $RegRoot -Name DataCenter -Value $DataCenterTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name Floor -Value $FloorTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name LanDeskVersion -Value $LanDeskTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name PrimaryFunction -Value $PrimaryFunctionTextBox.Text -Type MultiString
-    Set-ItemProperty -Path $RegRoot -Name Rack -Value $RackTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name RSAVersion -Value $RSATextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name SanAttached -Value $SanAttachedComboBox.Text
-    Set-ItemProperty -Path $RegRoot -Name SEPVersion -Value $SEPTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name ServerActivation -Value $ServerActivationTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name ServerFunction -Value $ServerFunctionComboBox.Text
-    Set-ItemProperty -Path $RegRoot -Name Shelf -Value $ShelfTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name SIEM/ALEVersion -Value $SIEMALETextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name State -Value $StateComboBox.Text
-    Set-ItemProperty -Path $RegRoot -Name StreetAddress -Value $StreetTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name VMWareToolsVersion -Value $VmwareToolsTextBox.Text
-    Set-ItemProperty -Path $RegRoot -Name WUInstall -Value $WUInstallTextBox.Text
+    if (!($wrongDate)) {
+        $wshell = New-Object -ComObject Wscript.Shell
+        $YesOrNo = $wshell.Popup("Are you sure you'd like to exit `nand save the entered data?",0,"Are You Sure you'd like to quit?",0x4 + 32)
+        if ($YesOrNo -eq 7){
+        
+        } elseif ($YesOrNo -eq 6) {
+            if ((Get-ItemProperty -Path $RegRoot | select -ExpandProperty BuildAdmin).length -le 0) {Set-ItemProperty -Path $RegRoot -Name BuildAdmin -Value $BuildAdminTextBox.Text}
+
+            if ($isThisVirtual){Set-ItemProperty -Path $RegRoot -Name AssetTag -Value $script:AssetTagTextBoxVirtual.Text} else {}
+            Set-ItemProperty -Path $RegRoot -Name City -Value $CityTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name Cluster -Value $ClusterTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name CostCenter -Value $CostCenterTextBox.text
+            Set-ItemProperty -Path $RegRoot -Name DataCenter -Value $DataCenterTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name Floor -Value $FloorTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name LanDeskVersion -Value $LanDeskTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name PrimaryFunction -Value $PrimaryFunctionTextBox.Text -Type MultiString
+            Set-ItemProperty -Path $RegRoot -Name Rack -Value $RackTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name RSAVersion -Value $RSATextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name SanAttached -Value $SanAttachedComboBox.Text
+            Set-ItemProperty -Path $RegRoot -Name SEPVersion -Value $SEPTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name ServerActivation -Value $ServerActivationTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name ServerFunction -Value $ServerFunctionComboBox.Text
+            Set-ItemProperty -Path $RegRoot -Name Shelf -Value $ShelfTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name SIEM/ALEVersion -Value $SIEMALETextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name State -Value $StateComboBox.Text
+            Set-ItemProperty -Path $RegRoot -Name StreetAddress -Value $StreetTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name VMWareToolsVersion -Value $VmwareToolsTextBox.Text
+            Set-ItemProperty -Path $RegRoot -Name WUInstall -Value $WUInstallTextBox.Text
+
+            [Environment]::Exit(1)
+        
+        } else {
+            $wshell = New-Object -ComObject Wscript.Shell
+            $wshell.Popup("Something went horribly wrong. Contact Adam Sulik `nWe are exiting without saving any data",0x0 + 16)
+        }
+    }
 
 }
+
 
 $handler_label8_Click= 
 {
@@ -242,8 +267,8 @@ $form1.Controls.Add($CurrentUserLabel)
 $TechBadgeTextBox.BackColor = [System.Drawing.Color]::FromArgb(255,227,227,227)
 $TechBadgerTextBox.DataBindings.DefaultDataSourceUpdateMode = 0
 $System_Drawing_Point = New-Object System.Drawing.Point
-$System_Drawing_Point.X = 110
-$System_Drawing_Point.Y = 40
+$System_Drawing_Point.X = 300 #110
+$System_Drawing_Point.Y = 10  #40
 $TechBadgerTextBox.Location = $System_Drawing_Point
 $TechBadgeTextBox.Name = "CurrentUserTextBox"
 $TechBadgeTextBox.ReadOnly = $True
@@ -260,7 +285,7 @@ $TechBadgeLabel.DataBindings.DefaultDataSourceUpdateMode = 0
 $TechBadgerLabel.Font = New-Object System.Drawing.Font("Calibri",12,1,3,1)
 
 $System_Drawing_Point = New-Object System.Drawing.Point
-$System_Drawing_Point.X = 12
+$System_Drawing_Point.X = 300
 $System_Drawing_Point.Y = 20
 $TechBadgeLabel.Location = $System_Drawing_Point
 $TechBadgeLabel.Name = "TechBadgeLabel"
@@ -1421,6 +1446,36 @@ $StreetTextBox.TabIndex = 0
 
 $PhysicalPanel.Controls.Add($StreetTextBox)
 
+$WarrentyExpirationTextBox.DataBindings.DefaultDataSourceUpdateMode = 0
+$System_Drawing_Point = New-Object System.Drawing.Point
+$System_Drawing_Point.X = 4
+$System_Drawing_Point.Y = 186
+$WarrentyExpirationTextBox.Location = $System_Drawing_Point
+$WarrentyExpirationTextBox.Name = "WarrentyExpirationTextBox"
+$System_Drawing_Size = New-Object System.Drawing.Size
+$System_Drawing_Size.Height = 24
+$System_Drawing_Size.Width = 182
+$WarrentyExpirationTextBox.Size = $System_Drawing_Size
+$WarrentyExpirationTextBox.TabIndex = 0
+
+$PhysicalPanel.Controls.Add($WarrentyExpirationTextBox)
+
+$WarrentyExpirationLabel.DataBindings.DefaultDataSourceUpdateMode = 0
+$WarrentyExpirationLabel.Font = New-Object System.Drawing.Font("Calibri",12,1,3,1)
+
+$System_Drawing_Point = New-Object System.Drawing.Point
+$System_Drawing_Point.X = 4
+$System_Drawing_Point.Y = 163
+$WarrentyExpirationLabel.Location = $System_Drawing_Point
+$WarrentyExpirationLabel.Name = "WarrentyExpirationLabel"
+$System_Drawing_Size = New-Object System.Drawing.Size
+$System_Drawing_Size.Height = 23
+$System_Drawing_Size.Width = 150
+$WarrentyExpirationLabel.Size = $System_Drawing_Size
+$WarrentyExpirationLabel.TabIndex = 4
+$WarrentyExpirationLabel.Text = "Warrenty Expiration"
+
+$PhysicalPanel.Controls.Add($WarrentyExpirationLabel)
 
 
 $ServerHistoryTab.DataBindings.DefaultDataSourceUpdateMode = 0
