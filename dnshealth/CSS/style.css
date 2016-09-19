@@ -1,0 +1,24 @@
+    .dragme {
+        position:relative;
+        width: 750px;
+        height: 500px;
+        cursor: move;
+		float: left;
+		background-color: #E6E6E6;
+        border: 1px solid #000;
+    }
+	.dragme:hover {
+		background-color: white;
+
+	}
+	
+	#login-page {
+		background: rgba(0,0,0,0.75);
+	}
+	
+	#login-form {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
